@@ -21,4 +21,4 @@ class TestVPC(unittest.TestCase):
         # Assert expected behavior
         self.assertEqual(vpc_id, 'mock-vpc-id')
         mock_client.create_vpc.assert_called_once_with(CidrBlock='10.0.0.0/16')
-        print(f"Mock VPC created
+        print(f"Mock VPC created")
