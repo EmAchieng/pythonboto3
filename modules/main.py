@@ -24,10 +24,10 @@ if __name__ == "__main__":
     sg_id = security_group.create_security_group(vpc_id, "nginx-sg", "Security group for Nginx")
     security_group.authorize_ingress(sg_id, 80, "tcp", "0.0.0.0/0")
 
-    #  EC2 Instance with Nginx
-    ami_id = "ami-0c577783b0a2933b7"  
-    instance_type = "t3.micro"
-    key_name = "my-key-pair"  
+    # EC2 Instance with Nginx
+    ami_id = os.getenv("AMI_ID")
+    instance_type = os.getenv("INSTANCE_TYPE")
+    key_name = os.getenv("KEY_NAME")
     instance_id = ec2_instance.create_ec2_instance(ami_id, instance_type, key_name, public_subnet_id, sg_id)
 
     # Public IP of the Instance
