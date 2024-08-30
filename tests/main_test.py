@@ -8,7 +8,9 @@ import subnet
 import internet_gateway
 import security_group
 import ec2_instance
-import main_setup  
+import main_setup
+import route_table
+import auto_scaling_group  
 
 class TestMainSetup(unittest.TestCase):
 
@@ -19,7 +21,13 @@ class TestMainSetup(unittest.TestCase):
     @patch('security_group.authorize_ingress')
     @patch('ec2_instance.create_ec2_instance')
     @patch('ec2_instance.get_instance_public_ip')
-    def test_main_setup(self, mock_get_instance_public_ip, mock_create_ec2_instance,
+    @patch('route_table.create_route_table')  
+    @patch('route_table.associate_route_table')  
+    @patch('auto_scaling_group.create_launch_configuration') 
+    @patch('auto_scaling_group.create_auto_scaling_group')  
+    def test_main_setup(self, mock_create_auto_scaling_group, mock_create_launch_configuration, 
+                        mock_associate_route_table, mock_create_route_table, 
+                        mock_get_instance_public_ip, mock_create_ec2_instance,
                         mock_authorize_ingress, mock_create_security_group,
                         mock_create_internet_gateway, mock_create_subnet, mock_create_vpc):
         
@@ -30,6 +38,10 @@ class TestMainSetup(unittest.TestCase):
         mock_create_security_group.return_value = "mock-sg-id"
         mock_create_ec2_instance.return_value = "mock-instance-id"
         mock_get_instance_public_ip.return_value = "mock-public-ip"
+        mock_create_route_table.return_value = "mock-route-table-id"
+        mock_associate_route_table.return_value = "mock-association-id"
+        mock_create_launch_configuration.return_value = None
+        mock_create_auto_scaling_group.return_value = None
 
         # Redirect stdout to capture print statements
         captured_output = io.StringIO()
@@ -46,7 +58,11 @@ class TestMainSetup(unittest.TestCase):
         mock_authorize_ingress.assert_called_once_with("mock-sg-id", 80, "tcp", "0.0.0.0/0")
         mock_create_ec2_instance.assert_called_once_with("ami-0c577783b0a2933b7", "t3.micro", "my-key-pair", "mock-subnet-id", "mock-sg-id")
         mock_get_instance_public_ip.assert_called_once_with("mock-instance-id")
-
+        mock_create_route_table.assert_called_once_with("mock-vpc-id")
+        mock_associate_route_table.assert_called_once_with("mock-route-table-id", "mock-subnet-id")
+        mock_create_launch_configuration.assert_called_once_with("my-launch-configuration", "ami-0c577783b0a2933b7", "t3.micro", "my-key-pair")
+        mock_create_auto_scaling_group.assert_called_once_with("my-auto-scaling-group", "my-launch-configuration", 1, 3, "mock-subnet-id")
+        
         # Assert printed output
         self.assertIn("EC2 Instance Public IP: mock-public-ip", captured_output.getvalue())
         self.assertIn("Setup complete.", captured_output.getvalue())
