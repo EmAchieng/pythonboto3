@@ -14,6 +14,8 @@ The SDK is structured into individual modules for different AWS resources:
 - **Security Group Module:** Facilitates security group creation and rules management.
 - **Subnet Module:** Supports subnet creation and configuration.
 - **Internet Gateway Module:** Provides functionality for managing internet gateways.
+- **Route Table Module:** Manages route tables and associations with subnets for network traffic routing.
+- **Auto Scaling Group Module:** Facilitates creation and management of auto-scaling groups and launch configurations for dynamic instance scaling.
 
 ### Benefits of Modularity
 
