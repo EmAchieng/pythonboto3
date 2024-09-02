@@ -32,8 +32,9 @@ Before installing the SDK, ensure:
 - AWS credentials are configured:
   - Either through environment variables (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
   - Or using AWS CLI configuration (`aws configure`).
-
-### Installation Guide With Pip
+    
+# Pip
+### Installation Guide 
    ```bash
    python3 -m venv path/to/venv
     source path/to/venv/bin/activate
@@ -43,30 +44,33 @@ Before installing the SDK, ensure:
   ```bash
    python3 modules/main.py
 ```
-### Testing with Pip
+### Testing 
    ```bash
    python3 pip install pytest
    pytest test/
 
    ```
-### Installation Guide With Docker
+
+# Docker
+### Installation Guide 
   ```bash
 docker build -t myimage .
 ```
 
-### Running with docker container
+### Running 
   ```bash
    docker run -p 4000:80 myimage
 ```
 
-### Testing with Docker
+### Testing 
    ```bash
    docker build -t mytestimage .
    docker run mytestimage
 
    ```
 
-### Installation Guide With Poetry
+# Poetry
+### Installation Guide 
  ```bash
    curl -sSL https://install.python-poetry.org | python3 -
 ```
@@ -77,12 +81,12 @@ poetry init
   ```bash
 poetry install
 ```
-### Running with Poetry
+### Running 
   ```bash
    poetry run python modules/main.py
 ```
 
-### Testing with Poetry
+### Testing 
    ```bash
    poetry add --dev pytest
    poetry run pytest
