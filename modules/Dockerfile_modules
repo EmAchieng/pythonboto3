@@ -1,8 +1,0 @@
-FROM python:3.9
-WORKDIR /app
-COPY . /app
-RUN pip install --no-cache-dir -r requirements.txt
-EXPOSE 80
-ENV AWS_ACCESS_KEY_ID=your_access_key_id
-ENV AWS_SECRET_ACCESS_KEY=your_secret_access_key
-CMD ["python", "./modules/main.py"]
