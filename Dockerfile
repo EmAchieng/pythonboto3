@@ -1,8 +1,13 @@
-FROM python:3.13.0rc2-slim
+FROM python:3.13.0rc2-slim AS base
+
 WORKDIR /app
 COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
+
+FROM base AS test
+CMD ["pytest", "./tests"]
+
+FROM base AS prod
+
 EXPOSE 80
-ENV AWS_ACCESS_KEY_ID=your_access_key_id
-ENV AWS_SECRET_ACCESS_KEY=your_secret_access_key
 CMD ["python", "./modules/main.py"]
