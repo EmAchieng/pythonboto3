@@ -25,6 +25,12 @@ class TestMainSetup(unittest.TestCase):
     @patch('route_table.associate_route_table')  
     @patch('auto_scaling_group.create_launch_configuration') 
     @patch('auto_scaling_group.create_auto_scaling_group')  
+    @patch('vpc.check_vpc_status')  # Mocking the status check
+    @patch('subnet.check_subnet_status')  
+    @patch('internet_gateway.check_igw_status')  
+    @patch('security_group.check_sg_status')  
+    @patch('route_table.check_route_table_status')  
+    @patch('ec2_instance.check_instance_status') 
     def test_main_setup(self, mock_create_auto_scaling_group, mock_create_launch_configuration, 
                         mock_associate_route_table, mock_create_route_table, 
                         mock_get_instance_public_ip, mock_create_ec2_instance,
@@ -43,6 +49,14 @@ class TestMainSetup(unittest.TestCase):
         mock_create_launch_configuration.return_value = None
         mock_create_auto_scaling_group.return_value = None
 
+         # Mock the status checks to return True immediately
+        mock_check_vpc_status.return_value = True
+        mock_check_subnet_status.return_value = True
+        mock_check_igw_status.return_value = True
+        mock_check_sg_status.return_value = True
+        mock_check_route_table_status.return_value = True
+        mock_check_instance_status.return_value = True
+        
         # Redirect stdout to capture print statements
         captured_output = io.StringIO()
         sys.stdout = captured_output
