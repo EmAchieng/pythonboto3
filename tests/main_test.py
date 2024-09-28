@@ -83,5 +83,8 @@ class TestMainSetup(unittest.TestCase):
         self.assertIn(f"You can access Nginx at http://mock-public-ip/", captured_output.getvalue())
         self.assertIn("Hello World from Nginx", captured_output.getvalue())
 
+         # Assert that cleanup_resources is called after the setup process
+        mock_cleanup_resources.assert_called_once_with("mock-vpc-id", "mock-subnet-id", "mock-igw-id", "mock-sg-id", "mock-instance-id", "mock-route-table-id")
+        
 if __name__ == '__main__':
     unittest.main()
