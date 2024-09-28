@@ -31,11 +31,15 @@ class TestMainSetup(unittest.TestCase):
     @patch('security_group.check_sg_status')  
     @patch('route_table.check_route_table_status')  
     @patch('ec2_instance.check_instance_status') 
-    def test_main_setup(self, mock_create_auto_scaling_group, mock_create_launch_configuration, 
+    @patch('main_setup.cleanup_resources')  # Ensure cleanup_resources is mocked
+    def test_main_setup(self, mock_cleanup_resources, mock_create_auto_scaling_group, mock_create_launch_configuration, 
                         mock_associate_route_table, mock_create_route_table, 
                         mock_get_instance_public_ip, mock_create_ec2_instance,
                         mock_authorize_ingress, mock_create_security_group,
-                        mock_create_internet_gateway, mock_create_subnet, mock_create_vpc):
+                        mock_create_internet_gateway, mock_create_subnet, mock_create_vpc,
+                        mock_check_vpc_status, mock_check_subnet_status, 
+                        mock_check_igw_status, mock_check_sg_status, 
+                        mock_check_route_table_status, mock_check_instance_status):
         
         # Mock return values for each function call
         mock_create_vpc.return_value = "mock-vpc-id"
@@ -49,7 +53,7 @@ class TestMainSetup(unittest.TestCase):
         mock_create_launch_configuration.return_value = None
         mock_create_auto_scaling_group.return_value = None
 
-         # Mock the status checks to return True immediately
+        # Mock the status checks to return True immediately
         mock_check_vpc_status.return_value = True
         mock_check_subnet_status.return_value = True
         mock_check_igw_status.return_value = True
@@ -71,7 +75,10 @@ class TestMainSetup(unittest.TestCase):
         mock_create_security_group.assert_called_once_with("mock-vpc-id", "nginx-sg", "Security group for Nginx")
         mock_authorize_ingress.assert_called_once_with("mock-sg-id", 80, "tcp", "0.0.0.0/0")
         mock_create_ec2_instance.assert_called_once_with("ami-0c577783b0a2933b7", "t3.micro", "my-key-pair", "mock-subnet-id", "mock-sg-id")
+        
+        # Assert that get_instance_public_ip is only called once
         mock_get_instance_public_ip.assert_called_once_with("mock-instance-id")
+
         mock_create_route_table.assert_called_once_with("mock-vpc-id")
         mock_associate_route_table.assert_called_once_with("mock-route-table-id", "mock-subnet-id")
         mock_create_launch_configuration.assert_called_once_with("my-launch-configuration", "ami-0c577783b0a2933b7", "t3.micro", "my-key-pair")
@@ -83,8 +90,8 @@ class TestMainSetup(unittest.TestCase):
         self.assertIn(f"You can access Nginx at http://mock-public-ip/", captured_output.getvalue())
         self.assertIn("Hello World from Nginx", captured_output.getvalue())
 
-         # Assert that cleanup_resources is called after the setup process
-        mock_cleanup_resources.assert_called_once_with("mock-vpc-id", "mock-subnet-id", "mock-igw-id", "mock-sg-id", "mock-instance-id", "mock-route-table-id")
+        # Assert that cleanup_resources is called after the setup process
+        mock_cleanup_resources.assert_called_once_with("mock-instance-id", "mock-subnet-id", "mock-sg-id", "mock-route-table-id", "mock-vpc-id")
         
 if __name__ == '__main__':
     unittest.main()

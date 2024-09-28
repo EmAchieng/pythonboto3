@@ -89,12 +89,11 @@ if __name__ == "__main__":
         instance_type = os.getenv("INSTANCE_TYPE")
         key_name = os.getenv("KEY_NAME")
         instance_id = ec2_instance.create_ec2_instance(ami_id, instance_type, key_name, public_subnet_id, sg_id)
-        public_ip = ec2_instance.get_instance_public_ip(instance_id)
+        public_ip = ec2_instance.get_instance_public_ip(instance_id)  # Retrieve public IP once
         wait_for_resource(ec2_instance.check_instance_status, instance_id, "EC2 Instance")
 
-        # Public IP of the Instance
-        public_ip = ec2_instance.get_instance_public_ip(instance_id)
-        print(f"EC2 Instance Public IP: {public_ip}")
+        # Print the Public IP of the Instance
+        print(f"EC2 Instance Public IP: {public_ip}")  # Use the retrieved public IP without calling the function again
 
         # Print
         print("Setup complete.")
