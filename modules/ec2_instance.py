@@ -8,26 +8,30 @@ import time
 
 def create_ec2_instance(ami_id, instance_type, key_name, subnet_id, sg_id):
     ec2_client = boto3.client('ec2')
-    response = ec2_client.run_instances(
-        ImageId=ami_id,
-        InstanceType=instance_type,
-        KeyName=key_name,
-        SubnetId=subnet_id,
-        SecurityGroupIds=[sg_id],
-        MinCount=1,
-        MaxCount=1,
-        UserData='''#!/bin/bash
-                    yum update -y
-                    amazon-linux-extras install nginx1 -y
-                    systemctl start nginx
-                    systemctl enable nginx
-                    echo "Hello World" > /usr/share/nginx/html/index.html
-                    ''',
-        InstanceInitiatedShutdownBehavior='terminate',  
-    )
-    instance_id = response['Instances'][0]['InstanceId']
-    print(f"EC2 Instance created with ID: {instance_id}")
-    return instance_id
+    try:
+        response = ec2_client.run_instances(
+            ImageId=ami_id,
+            InstanceType=instance_type,
+            KeyName=key_name,
+            SubnetId=subnet_id,
+            SecurityGroupIds=[sg_id],
+            MinCount=1,
+            MaxCount=1,
+            UserData='''#!/bin/bash
+                        yum update -y
+                        amazon-linux-extras install nginx1 -y
+                        systemctl start nginx
+                        systemctl enable nginx
+                        echo "Hello World" > /usr/share/nginx/html/index.html
+                        ''',
+            InstanceInitiatedShutdownBehavior='terminate',  
+        )
+        instance_id = response['Instances'][0]['InstanceId']
+        print(f"EC2 Instance created with ID: {instance_id}")
+        return instance_id
+    except Exception as e:
+        print(f"Failed to create EC2 instance: {e}")
+        raise  # Re-raise the exception after logging
 
 """
 Retrieve and wait for the public IP address of an EC2 instance identified by instance_id.
